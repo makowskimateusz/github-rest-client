@@ -1,8 +1,7 @@
 package com.makowski.allegro.recruitment.rest.api;
 
-import com.makowski.allegro.recruitment.rest.client.GithubService;
+import com.makowski.allegro.recruitment.rest.client.GithubClient;
 import com.makowski.allegro.recruitment.model.GithubData;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +15,10 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("repositories/")
-@Slf4j
 public class ApiController {
 
     @Autowired
-    private GithubService github;
+    private GithubClient github;
 
     @GetMapping(value = "/{owner}/{repositoryName}")
     public GithubData getRepositoryDetails(@PathVariable("owner") String owner,

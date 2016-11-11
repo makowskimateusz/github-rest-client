@@ -1,6 +1,7 @@
 package com.makowski.allegro.recruitment.rest.client;
 
 import com.makowski.allegro.recruitment.model.GithubData;
+import org.springframework.stereotype.Service;
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
