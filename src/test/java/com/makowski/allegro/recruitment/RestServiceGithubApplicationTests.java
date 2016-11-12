@@ -1,6 +1,6 @@
 package com.makowski.allegro.recruitment;
 
-import com.makowski.allegro.recruitment.exception.NotFoundRepositoryOrUserExceptionHandler;
+import com.makowski.allegro.recruitment.exception.RepositoryOrUserNotFoundExceptionHandler;
 import com.makowski.allegro.recruitment.rest.api.ApiController;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class RestServiceGithubApplicationTests {
 	public void setUp(){
 
 		mvc = MockMvcBuilders.standaloneSetup(apiController)
-				.setControllerAdvice(new NotFoundRepositoryOrUserExceptionHandler())
+				.setControllerAdvice(new RepositoryOrUserNotFoundExceptionHandler())
 				.build();
 	}
 

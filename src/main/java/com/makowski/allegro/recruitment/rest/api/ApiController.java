@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 
 /**
@@ -18,7 +19,14 @@ import java.io.IOException;
 public class ApiController {
 
     @Autowired
+    public void setGithub(GithubClient github) {
+        this.github = github;
+    }
+
+    @Autowired
     private GithubClient github;
+
+
 
     @GetMapping(value = "/{owner}/{repositoryName}")
     public GithubData getRepositoryDetails(@PathVariable("owner") String owner,

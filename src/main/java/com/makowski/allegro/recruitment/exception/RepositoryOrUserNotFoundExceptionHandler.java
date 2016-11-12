@@ -9,15 +9,14 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
 /**
  * Created by Mateusz Makowski on 09.11.2016.
  */
 @ControllerAdvice
-public class NotFoundRepositoryOrUserExceptionHandler extends ResponseEntityExceptionHandler {
+public class RepositoryOrUserNotFoundExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {NotFoundRepositoryOrUserException.class, GithubApiTimeoutException.class, IOException.class})
+    @ExceptionHandler(value = {RepositoryOrUserNotFoundException.class, GithubApiTimeoutException.class, IOException.class})
     public ResponseEntity<Object> badRequest(RuntimeException ex, WebRequest request) {
           return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

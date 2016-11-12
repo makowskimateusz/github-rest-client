@@ -1,7 +1,7 @@
 package com.makowski.allegro.recruitment.rest.client;
 
 import com.makowski.allegro.recruitment.exception.GithubApiTimeoutException;
-import com.makowski.allegro.recruitment.exception.NotFoundRepositoryOrUserException;
+import com.makowski.allegro.recruitment.exception.RepositoryOrUserNotFoundException;
 import com.makowski.allegro.recruitment.model.GithubData;
 import com.squareup.okhttp.OkHttpClient;
 import lombok.Setter;
@@ -25,6 +25,8 @@ public class GithubClient {
     public static int connectTime = 2000;
     @Setter
     public static int readTime = 3000;
+    @Setter
+    public static String baseUrl = "https://api.github.com/";
 
     private GithubApiService service;
 
@@ -39,7 +41,7 @@ public class GithubClient {
         okHttpClient.setReadTimeout(readTime, TimeUnit.MILLISECONDS);
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build();
@@ -50,7 +52,7 @@ public class GithubClient {
     public GithubData getData(String owner, String repositoryName) throws IOException{
         try{
             return Optional.ofNullable(service.getInformationsRequest(owner, repositoryName)
-                    .execute().body()).orElseThrow(() -> new NotFoundRepositoryOrUserException("There is no such user or repository"));
+                    .execute().body()).orElseThrow(() -> new RepositoryOrUserNotFoundException("There is no such user or repository"));
         } catch (SocketTimeoutException e) {
             throw new GithubApiTimeoutException(e.getMessage());
         }
