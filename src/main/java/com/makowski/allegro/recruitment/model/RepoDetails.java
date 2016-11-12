@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GithubData {
+public class RepoDetails {
     @JsonProperty(value = "fullName")
     private String full_name;
     private String description;

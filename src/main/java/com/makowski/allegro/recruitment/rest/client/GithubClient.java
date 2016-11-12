@@ -2,10 +2,10 @@ package com.makowski.allegro.recruitment.rest.client;
 
 import com.makowski.allegro.recruitment.exception.GithubApiTimeoutException;
 import com.makowski.allegro.recruitment.exception.RepositoryOrUserNotFoundException;
-import com.makowski.allegro.recruitment.model.GithubData;
+import com.makowski.allegro.recruitment.model.RepoDetails;
 import com.squareup.okhttp.OkHttpClient;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
@@ -21,12 +21,13 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class GithubClient {
 
-    @Setter
-    public static int connectTime = 2000;
-    @Setter
-    public static int readTime = 3000;
-    @Setter
-    public static String baseUrl = "https://api.github.com/";
+
+    @Value("${connectTime}")
+    private int connectTime;
+    @Value("${readTime}")
+    private int readTime;
+    @Value("${baseUrl}")
+    private String baseUrl = "https://api.github.com/";
 
     private GithubApiService service;
 
@@ -49,9 +50,9 @@ public class GithubClient {
         service = retrofit.create(GithubApiService.class);
     }
 
-    public GithubData getData(String owner, String repositoryName) throws IOException{
+    public RepoDetails getData(String owner, String repositoryName) throws IOException{
         try{
-            return Optional.ofNullable(service.getInformationsRequest(owner, repositoryName)
+            return Optional.ofNullable(service.getRepoDetails(owner, repositoryName)
                     .execute().body()).orElseThrow(() -> new RepositoryOrUserNotFoundException("There is no such user or repository"));
         } catch (SocketTimeoutException e) {
             throw new GithubApiTimeoutException(e.getMessage());
