@@ -4,8 +4,11 @@ import com.makowski.allegro.recruitment.exception.GithubApiTimeoutException;
 import com.makowski.allegro.recruitment.exception.RepositoryOrUserNotFoundException;
 import com.makowski.allegro.recruitment.model.RepoDetails;
 import com.squareup.okhttp.OkHttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Service;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
@@ -21,13 +24,12 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class GithubClient {
 
-
     @Value("${connectTime}")
     private int connectTime;
     @Value("${readTime}")
     private int readTime;
     @Value("${baseUrl}")
-    private String baseUrl = "https://api.github.com/";
+    private String baseUrl;
 
     private GithubApiService service;
 
@@ -35,7 +37,10 @@ public class GithubClient {
 
     private OkHttpClient okHttpClient;
 
-    public GithubClient() {
+    @Autowired
+    public GithubClient(@Value("${connectTime}") int connectTime,
+                        @Value("${readTime}") int readTime,
+                        @Value("${baseUrl}") String baseUrl) {
 
         okHttpClient = new OkHttpClient();
         okHttpClient.setConnectTimeout(connectTime, TimeUnit.MILLISECONDS);

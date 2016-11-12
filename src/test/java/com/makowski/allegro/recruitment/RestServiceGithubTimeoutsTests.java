@@ -28,6 +28,7 @@ import java.io.IOException;
 import static com.jayway.restassured.RestAssured.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -43,24 +44,34 @@ public class RestServiceGithubTimeoutsTests {
 
     private MockGithubServer mockGithubServer;
 
+    private MockMvc mvc;
+
     @Before
     public void setUp() throws IOException {
 
         mockGithubServer = new MockGithubServer();
         mockGithubServer.runMockServer();
 
-        RestServiceGithubApplication.main(new String[]{});
-        RestAssured.baseURI = "http://localhost:8081";
+        mvc = MockMvcBuilders.standaloneSetup(apiController)
+                .setControllerAdvice(new RepositoryOrUserNotFoundExceptionHandler())
+                .build();
 
     }
 
     @Test
-    public void shouldGetTimeout() throws Exception {
-        when().get("/repositories/makowskimateusz/marks")
-                .then().assertThat().statusCode(400);
+    public void shouldGetTimeoutInformation() throws Exception {
+
+        mvc.perform(get("/repositories/makowskimateusz/marks"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("connect timed out"));
+
     }
 
+
+
     class MockGithubServer extends AbstractVerticle {
+
+        private final static int responseDelay = 10;
 
         public void runMockServer() {
             Vertx vertx = Vertx.vertx();
@@ -82,7 +93,7 @@ public class RestServiceGithubTimeoutsTests {
 
             router.route().handler(BodyHandler.create());
 
-            vertx.setTimer(10, id -> {
+            vertx.setTimer(responseDelay, id -> {
                 router.get("/repositories/makowskimateusz/marks").handler(this::response);
             });
 
