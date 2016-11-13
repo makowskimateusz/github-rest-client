@@ -14,9 +14,12 @@ import java.io.IOException;
  * Created by Mateusz Makowski on 09.11.2016.
  */
 @ControllerAdvice
-public class RepositoryOrUserNotFoundExceptionHandler extends ResponseEntityExceptionHandler {
+public class GithubServiceErrorsExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {RepositoryOrUserNotFoundException.class, GithubApiTimeoutException.class, IOException.class})
+    @ExceptionHandler(value = {RepositoryOrUserNotFoundException.class,
+            GithubApiTimeoutException.class,
+            GithubErrorException.class,
+            IOException.class})
     public ResponseEntity<Object> badRequest(RuntimeException ex, WebRequest request) {
           return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

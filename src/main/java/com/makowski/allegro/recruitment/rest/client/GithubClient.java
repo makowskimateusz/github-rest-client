@@ -1,6 +1,7 @@
 package com.makowski.allegro.recruitment.rest.client;
 
 import com.makowski.allegro.recruitment.exception.GithubApiTimeoutException;
+import com.makowski.allegro.recruitment.exception.GithubErrorException;
 import com.makowski.allegro.recruitment.exception.RepositoryOrUserNotFoundException;
 import com.makowski.allegro.recruitment.model.RepoDetails;
 import com.squareup.okhttp.OkHttpClient;
@@ -10,7 +11,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Service;
+import retrofit.Call;
 import retrofit.GsonConverterFactory;
+import retrofit.Response;
 import retrofit.Retrofit;
 
 import java.io.IOException;
@@ -57,8 +60,20 @@ public class GithubClient {
 
     public RepoDetails getData(String owner, String repositoryName) throws IOException{
         try{
-            return Optional.ofNullable(service.getRepoDetails(owner, repositoryName)
-                    .execute().body()).orElseThrow(() -> new RepositoryOrUserNotFoundException("There is no such user or repository"));
+
+            Response<RepoDetails> response = service.getRepoDetails(owner, repositoryName).execute();
+            Optional<Response<RepoDetails>> repoDetailsResponse = Optional.ofNullable(response);
+
+            if(repoDetailsResponse.get().code() == 500){
+                throw new GithubErrorException("Internal github server error");
+            } else if (repoDetailsResponse.get().code() == 503) {
+                throw new GithubErrorException("Github service unavailable");
+            } else {
+                return Optional.ofNullable(response.body())
+                        .orElseThrow(() -> new RepositoryOrUserNotFoundException("There is no such user or repository"));
+
+            }
+
         } catch (SocketTimeoutException e) {
             throw new GithubApiTimeoutException(e.getMessage());
         }
